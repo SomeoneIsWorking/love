@@ -87,8 +87,20 @@ if(APPLE)
 else()
 	set(LOVE_DEFAULT_JIT TRUE)
 endif()
-
 option(LOVE_JIT "Use LuaJIT" ${LOVE_DEFAULT_JIT})
+option(LOVE_MPG123 "Use mpg123" TRUE)
+option(LOVE_PROBE "Build the opt-in Lucent-backed probe module" FALSE)
+set(LOVE_LUCENT_DIR "" CACHE PATH "Path to the Lucent source tree when LOVE_PROBE is enabled")
+
+if(LOVE_PROBE)
+	if(NOT LOVE_LUCENT_DIR)
+		message(FATAL_ERROR "LOVE_PROBE requires LOVE_LUCENT_DIR pointing to the Lucent source tree")
+	endif()
+	if(NOT EXISTS "${LOVE_LUCENT_DIR}/CMakeLists.txt")
+		message(FATAL_ERROR "LOVE_LUCENT_DIR does not contain a CMakeLists.txt: ${LOVE_LUCENT_DIR}")
+	endif()
+	add_subdirectory("${LOVE_LUCENT_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/lucent")
+endif()
 
 if(LOVE_JIT)
 	if(APPLE)
@@ -1192,6 +1204,25 @@ target_link_libraries(love_touch INTERFACE
 	love_touch_root
 	love_touch_sdl
 )
+source_group("modules\\touch" FILES ${LOVE_SRC_MODULE_TOUCH_ROOT})
+source_group("modules\\touch\\sdl" FILES ${LOVE_SRC_MODULE_TOUCH_SDL})
+
+#
+# love.probe
+#
+
+if(LOVE_PROBE)
+	add_library(love_probe STATIC
+		src/modules/probe/Probe.cpp
+		src/modules/probe/Probe.h
+		src/modules/probe/wrap_Probe.cpp
+		src/modules/probe/wrap_Probe.h
+	)
+	target_link_libraries(love_probe PUBLIC
+		lovedep::Lua
+		lucent::lucent
+	)
+endif()
 #
 # love.video
 #
@@ -1944,6 +1975,9 @@ set(LIBLOVE_DEPENDENCIES
 	love_video
 	love_window
 )
+if(LOVE_PROBE)
+	list(APPEND LIBLOVE_DEPENDENCIES love_probe)
+endif()
 set(LIBLOVE_LIBRARIES
 	love_3p_box2d
 	love_3p_ddsparse
@@ -1963,6 +1997,10 @@ set(LIBLOVE_LIBRARIES
 )
 target_link_libraries(liblove ${LIBLOVE_DEPENDENCIES} ${LIBLOVE_LIBRARIES})
 
+if(LOVE_PROBE)
+	target_compile_definitions(liblove PRIVATE LOVE_ENABLE_PROBE)
+endif()
+
 if(LOVE_EXTRA_DEPENDECIES)
 	add_dependencies(liblove ${LOVE_EXTRA_DEPENDECIES})
 endif()
@@ -1970,7 +2008,6 @@ endif()
 #
 # Group projects in Visual Studio
 #
-
 love_group_projects(NAME "liblove" NESTED TARGETS ${LIBLOVE_DEPENDENCIES})
 love_group_projects(NAME "liblove/libraries" NESTED TARGETS ${LIBLOVE_LIBRARIES})
 love_group_projects(NAME "liblove" TARGETS liblove ${LOVE_EXTRA_DEPENDECIES})
@@ -1995,6 +2032,7 @@ if(MSVC OR MINGW)
 		extra/windows/love.rc
 		extra/windows/love.ico
 	)
+endif()
 endif()
 
 #

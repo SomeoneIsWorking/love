@@ -144,6 +144,9 @@ extern "C"
 #if defined(LOVE_ENABLE_PHYSICS)
 	extern int luaopen_love_physics(lua_State*);
 #endif
+#if defined(LOVE_ENABLE_PROBE)
+	extern int luaopen_love_probe(lua_State*);
+#endif
 #if defined(LOVE_ENABLE_SENSOR)
 	extern int luaopen_love_sensor(lua_State*);
 #endif
@@ -215,6 +218,9 @@ static const luaL_Reg modules[] = {
 #endif
 #if defined(LOVE_ENABLE_PHYSICS)
 	{ "love.physics", luaopen_love_physics },
+#endif
+#if defined(LOVE_ENABLE_PROBE)
+	{ "love.probe", luaopen_love_probe },
 #endif
 #if defined(LOVE_ENABLE_SENSOR)
 	{ "love.sensor", luaopen_love_sensor },
