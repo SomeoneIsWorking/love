@@ -1204,9 +1204,6 @@ target_link_libraries(love_touch INTERFACE
 	love_touch_root
 	love_touch_sdl
 )
-source_group("modules\\touch" FILES ${LOVE_SRC_MODULE_TOUCH_ROOT})
-source_group("modules\\touch\\sdl" FILES ${LOVE_SRC_MODULE_TOUCH_SDL})
-
 #
 # love.probe
 #
@@ -2032,7 +2029,6 @@ if(MSVC OR MINGW)
 		extra/windows/love.rc
 		extra/windows/love.ico
 	)
-endif()
 endif()
 
 #
