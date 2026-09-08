@@ -40,7 +40,7 @@ struct Probe::State
 	std::uint16_t port = 0;
 };
 
-Probe::Probe() : state(std::make_shared<State>()) {}
+Probe::Probe() : Module(M_PROBE, "love.probe"), state(std::make_shared<State>()) {}
 
 Probe::~Probe()
 {

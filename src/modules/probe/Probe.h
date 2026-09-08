@@ -49,15 +49,6 @@ public:
 	Probe();
 	~Probe() override;
 
-	ModuleType getModuleType() const override
-	{
-		return M_PROBE;
-	}
-	const char *getName() const override
-	{
-		return "love.probe";
-	}
-
 	bool start(std::uint16_t port);
 	void stop();
 	bool running() const;
