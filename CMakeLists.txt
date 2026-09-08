@@ -91,6 +91,8 @@ option(LOVE_JIT "Use LuaJIT" ${LOVE_DEFAULT_JIT})
 option(LOVE_MPG123 "Use mpg123" TRUE)
 option(LOVE_PROBE "Build the opt-in Lucent-backed probe module" FALSE)
 set(LOVE_LUCENT_DIR "" CACHE PATH "Path to the Lucent source tree when LOVE_PROBE is enabled")
+set(LOVE_LUCENT_REQUIRED_COMMIT "4c72484ff1e0176fe1dedf2803afae3831703afe" CACHE STRING
+	"Required Lucent revision when LOVE_PROBE is enabled")
 
 if(LOVE_PROBE)
 	if(NOT LOVE_LUCENT_DIR)
@@ -98,6 +100,18 @@ if(LOVE_PROBE)
 	endif()
 	if(NOT EXISTS "${LOVE_LUCENT_DIR}/CMakeLists.txt")
 		message(FATAL_ERROR "LOVE_LUCENT_DIR does not contain a CMakeLists.txt: ${LOVE_LUCENT_DIR}")
+	endif()
+	find_package(Git REQUIRED)
+	execute_process(
+		COMMAND "${GIT_EXECUTABLE}" -C "${LOVE_LUCENT_DIR}" rev-parse HEAD
+		OUTPUT_VARIABLE LOVE_LUCENT_ACTUAL_COMMIT
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+		RESULT_VARIABLE LOVE_LUCENT_REVISION_RESULT
+	)
+	if(NOT LOVE_LUCENT_REVISION_RESULT EQUAL 0 OR NOT LOVE_LUCENT_ACTUAL_COMMIT STREQUAL LOVE_LUCENT_REQUIRED_COMMIT)
+		message(FATAL_ERROR
+			"LOVE_PROBE requires Lucent revision ${LOVE_LUCENT_REQUIRED_COMMIT}; "
+			"found ${LOVE_LUCENT_ACTUAL_COMMIT}")
 	endif()
 	add_subdirectory("${LOVE_LUCENT_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/lucent")
 endif()
