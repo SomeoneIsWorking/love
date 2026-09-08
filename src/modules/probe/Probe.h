@@ -49,8 +49,14 @@ public:
 	Probe();
 	~Probe() override;
 
-	ModuleType getModuleType() const override { return M_PROBE; }
-	const char *getName() const override { return "love.probe"; }
+	ModuleType getModuleType() const override
+	{
+		return M_PROBE;
+	}
+	const char *getName() const override
+	{
+		return "love.probe";
+	}
 
 	bool start(std::uint16_t port);
 	void stop();
@@ -64,7 +70,7 @@ private:
 	std::shared_ptr<State> state;
 };
 
-} // probe
-} // love
+} // namespace probe
+} // namespace love
 
 #endif // LOVE_PROBE_H

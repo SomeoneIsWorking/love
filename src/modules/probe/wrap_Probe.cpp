@@ -35,7 +35,7 @@ static int w_start(lua_State *L)
 	if (requested_port < 0 || requested_port > 0xFFFF)
 		return luaL_error(L, "probe port must be between 0 and 65535");
 	bool started = false;
-	luax_catchexcept(L, [&]() { started = instance()->start((std::uint16_t) requested_port); });
+	luax_catchexcept(L, [&]() { started = instance()->start((std::uint16_t)requested_port); });
 	lua_pushboolean(L, started);
 	return 1;
 }
@@ -61,7 +61,7 @@ static int w_port(lua_State *L)
 static int w_poll(lua_State *L)
 {
 	std::vector<Command> commands = instance()->poll();
-	lua_createtable(L, (int) commands.size(), 0);
+	lua_createtable(L, (int)commands.size(), 0);
 	int index = 1;
 	for (const Command &command : commands)
 	{
@@ -87,16 +87,8 @@ static int w_setState(lua_State *L)
 	return 1;
 }
 
-static const luaL_Reg functions[] =
-{
-	{ "start", w_start },
-	{ "stop", w_stop },
-	{ "isRunning", w_running },
-	{ "getPort", w_port },
-	{ "poll", w_poll },
-	{ "setState", w_setState },
-	{ 0, 0 }
-};
+static const luaL_Reg functions[] = {{"start", w_start}, {"stop", w_stop}, {"isRunning", w_running},
+	{"getPort", w_port}, {"poll", w_poll}, {"setState", w_setState}, {0, 0}};
 
 extern "C" int luaopen_love_probe(lua_State *L)
 {
@@ -115,5 +107,5 @@ extern "C" int luaopen_love_probe(lua_State *L)
 	return luax_register_module(L, wrapped);
 }
 
-} // probe
-} // love
+} // namespace probe
+} // namespace love

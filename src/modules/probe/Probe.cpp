@@ -40,10 +40,7 @@ struct Probe::State
 	std::uint16_t port = 0;
 };
 
-Probe::Probe()
-	: state(std::make_shared<State>())
-{
-}
+Probe::Probe() : state(std::make_shared<State>()) {}
 
 Probe::~Probe()
 {
@@ -62,15 +59,16 @@ bool Probe::start(std::uint16_t requested_port)
 	options.max_body_bytes = MAX_STATE_BYTES;
 	std::weak_ptr<State> weak_state = state;
 	std::unique_ptr<lucent::http::Server> server(new lucent::http::Server(options,
-		[weak_state](const lucent::http::Request &request) {
+		[weak_state](const lucent::http::Request &request)
+		{
 			std::shared_ptr<State> current = weak_state.lock();
 			if (!current)
 				return lucent::http::Response::text(503, "Unavailable", "probe is stopping\n");
 			if (request.method == "GET" && request.path() == "/state")
 			{
 				std::lock_guard<std::mutex> state_lock(current->mutex);
-				return lucent::http::Response::json(200, "OK",
-					current->state_json.empty() ? "{}" : current->state_json);
+				return lucent::http::Response::json(
+					200, "OK", current->state_json.empty() ? "{}" : current->state_json);
 			}
 			if (request.method != "POST" || request.path() != "/command")
 				return lucent::http::Response::text(404, "Not Found", "unknown probe route\n");
@@ -132,5 +130,5 @@ bool Probe::setState(const std::string &state_json_value)
 	return true;
 }
 
-} // probe
-} // love
+} // namespace probe
+} // namespace love

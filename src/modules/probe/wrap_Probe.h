@@ -31,7 +31,7 @@ namespace probe
 
 extern "C" LOVE_EXPORT int luaopen_love_probe(lua_State *L);
 
-} // probe
-} // love
+} // namespace probe
+} // namespace love
 
 #endif // LOVE_WRAP_PROBE_H
