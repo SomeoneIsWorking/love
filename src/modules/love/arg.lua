@@ -103,6 +103,7 @@ end
 
 love.arg.options = {
 	console = { a = 0 },
+	headless = { a = 0 },
 	fused = { a = 0 },
 	game = { a = 1 },
 	renderers = { a = 1 },

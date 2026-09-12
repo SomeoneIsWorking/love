@@ -88,6 +88,7 @@ function love.boot()
 	love.parsedGameArguments = love.arg.parseGameArguments(love.rawGameArguments)
 
 	local o = love.arg.options
+	love._headless = o.headless.set == true
 
 	local is_fused_game = can_has_game or love.arg.options.fused.set
 
@@ -164,6 +165,7 @@ usage:
     love path/to/gamedir            runs the game from the given directory which contains a main.lua file
     love path/to/packagedgame.love  runs the packaged game from the provided .love file
     love path/to/file.lua           runs the game from the given .lua file
+    love --headless path/to/game    runs updates without a window, graphics, or audio
 ]]);
 		local nogame = require("love.nogame")
 		nogame()
@@ -256,6 +258,15 @@ function love.init()
 		confok, conferr = pcall(love.conf, c)
 		-- If love.conf errors, we'll trigger the error after loading modules so
 		-- the error message can be displayed in the window.
+	end
+
+	-- Headless is an engine command-line contract, not a game preference. Keep data,
+	-- filesystem, timer and events active so an application can still run and be probed.
+	if love._headless then
+		for _, module in ipairs{"window", "graphics", "audio", "video", "keyboard",
+			"mouse", "joystick", "touch", "sensor"} do
+			c.modules[module] = false
+		end
 	end
 
 	-- Console hack, part 2.
