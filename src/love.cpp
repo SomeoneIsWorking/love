@@ -162,7 +162,8 @@ static void print_usage()
 		   "    love path/to/gamedir            runs the game from the given directory which contains a main.lua file\n"
 		   "    love path/to/packagedgame.love  runs the packaged game from the provided .love file\n"
 		   "    love path/to/file.lua           runs the game from the given .lua file\n"
-		   "    love --headless path/to/game    runs updates without a window, graphics, or audio\n");
+		   "    love --headless path/to/game    runs updates without a window, graphics, or audio\n"
+		   "    love --hidden path/to/game      renders into an unmapped window without vsync or dialogs\n");
 }
 
 static DoneAction runlove(int argc, char **argv, int &retval, love::Variant &restartvalue)

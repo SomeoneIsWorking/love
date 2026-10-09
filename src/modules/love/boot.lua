@@ -89,6 +89,7 @@ function love.boot()
 
 	local o = love.arg.options
 	love._headless = o.headless.set == true
+	love._hidden = o.hidden.set == true
 
 	local is_fused_game = can_has_game or love.arg.options.fused.set
 
@@ -166,6 +167,7 @@ usage:
     love path/to/packagedgame.love  runs the packaged game from the provided .love file
     love path/to/file.lua           runs the game from the given .lua file
     love --headless path/to/game    runs updates without a window, graphics, or audio
+    love --hidden path/to/game      renders into an unmapped window without vsync or dialogs
 ]]);
 		local nogame = require("love.nogame")
 		nogame()
@@ -339,6 +341,10 @@ function love.init()
 
 	if love._setHighDPIAllowed then
 		love._setHighDPIAllowed(c.highdpi)
+	end
+
+	if love._setHiddenRun then
+		love._setHiddenRun(love._hidden)
 	end
 
 	if love._setTrackpadTouch then

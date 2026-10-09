@@ -223,7 +223,8 @@ function love.errorhandler(msg)
 
 	error_printer(msg, 2)
 
-	if not love.window then
+	-- Nobody reads an error screen in a hidden run; the exit code carries the failure.
+	if not love.window or love._hidden then
 		return
 	end
 

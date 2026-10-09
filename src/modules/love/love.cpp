@@ -450,6 +450,14 @@ static int w__setHighDPIAllowed(lua_State *L)
 	return 0;
 }
 
+static int w__setHiddenRun(lua_State *L)
+{
+#ifdef LOVE_ENABLE_WINDOW
+	love::window::setHiddenRun((bool)lua_toboolean(L, 1));
+#endif
+	return 0;
+}
+
 static int w__setTrackpadTouch(lua_State *L)
 {
 #ifdef LOVE_ENABLE_TOUCH
@@ -588,6 +596,9 @@ int luaopen_love(lua_State *L)
 
 	lua_pushcfunction(L, w__setHighDPIAllowed);
 	lua_setfield(L, -2, "_setHighDPIAllowed");
+
+	lua_pushcfunction(L, w__setHiddenRun);
+	lua_setfield(L, -2, "_setHiddenRun");
 
 	lua_pushcfunction(L, w__setTrackpadTouch);
 	lua_setfield(L, -2, "_setTrackpadTouch");

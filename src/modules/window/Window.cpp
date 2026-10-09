@@ -27,6 +27,7 @@ namespace window
 {
 
 static bool highDPIAllowed = false;
+static bool hiddenRun = false;
 
 // TODO: find a cleaner way to do this...
 // The window backend (e.g. love.window.sdl) is expected to implement this.
@@ -41,6 +42,16 @@ void setHighDPIAllowed(bool enable)
 bool isHighDPIAllowed()
 {
 	return highDPIAllowed;
+}
+
+void setHiddenRun(bool enable)
+{
+	hiddenRun = enable;
+}
+
+bool isHiddenRun()
+{
+	return hiddenRun;
 }
 
 Window::Window(const char *name)

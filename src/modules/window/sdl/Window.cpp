@@ -609,6 +609,8 @@ bool Window::setWindow(int width, int height, WindowSettings *settings)
 			sdlflags |= SDL_WINDOW_HIGH_PIXEL_DENSITY;
 
 		Uint32 createflags = sdlflags & (~SDL_WINDOW_FULLSCREEN);
+		if (isHiddenRun())
+			createflags |= SDL_WINDOW_HIDDEN;
 
 		if (!createWindowAndContext(x, y, width, height, createflags, renderer))
 			return false;
@@ -638,7 +640,8 @@ bool Window::setWindow(int width, int height, WindowSettings *settings)
 	if (this->settings.displayindex != f.displayindex || f.useposition || f.centered)
 		SDL_SetWindowPosition(window, x, y);
 
-	SDL_RaiseWindow(window);
+	if (!isHiddenRun())
+		SDL_RaiseWindow(window);
 
 	setVSync(f.vsync);
 
@@ -1093,6 +1096,10 @@ love::image::ImageData *Window::getIcon()
 
 void Window::setVSync(int vsync)
 {
+	// An unmapped surface never receives a frame callback, so a vsynced present would block forever.
+	if (isHiddenRun())
+		vsync = 0;
+
 	if (glcontext != nullptr)
 	{
 		SDL_GL_SetSwapInterval(vsync);
@@ -1190,7 +1197,7 @@ void Window::maximize()
 
 void Window::restore()
 {
-	if (window != nullptr)
+	if (window != nullptr && !isHiddenRun())
 	{
 		SDL_RestoreWindow(window);
 		updateSettings(settings, true);
@@ -1199,7 +1206,7 @@ void Window::restore()
 
 void Window::focus()
 {
-	if (window != nullptr)
+	if (window != nullptr && !isHiddenRun())
 	{
 		SDL_RaiseWindow(window);
 		updateSettings(settings, true);
@@ -1448,6 +1455,12 @@ SDL_MessageBoxFlags Window::convertMessageBoxType(MessageBoxType type) const
 
 bool Window::showMessageBox(const std::string &title, const std::string &message, MessageBoxType type, bool attachtowindow)
 {
+	if (isHiddenRun())
+	{
+		fprintf(stderr, "%s: %s\n", title.c_str(), message.c_str());
+		return false;
+	}
+
 	SDL_MessageBoxFlags flags = convertMessageBoxType(type);
 	SDL_Window *sdlwindow = attachtowindow ? window : nullptr;
 
@@ -1456,6 +1469,12 @@ bool Window::showMessageBox(const std::string &title, const std::string &message
 
 int Window::showMessageBox(const MessageBoxData &data)
 {
+	if (isHiddenRun())
+	{
+		fprintf(stderr, "%s: %s\n", data.title.c_str(), data.message.c_str());
+		return -1;
+	}
+
 	SDL_MessageBoxData sdldata = {};
 
 	sdldata.flags = convertMessageBoxType(data.type);

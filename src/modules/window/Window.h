@@ -47,6 +47,11 @@ namespace window
 void setHighDPIAllowed(bool enable);
 bool isHighDPIAllowed();
 
+// A hidden run: every window is created unmapped, presents without vsync and
+// logs message boxes to stderr instead of showing them.
+void setHiddenRun(bool enable);
+bool isHiddenRun();
+
 // Forward-declared so it can be used in the class methods. We can't define the
 // whole thing here because it uses the Window::Type enum.
 struct WindowSettings;
